@@ -1,0 +1,51 @@
+name: Build Simple Live (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Flutter 3.38.10
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.10"
+          channel: stable
+          cache: true
+
+      - name: 启用 Windows 桌面支持
+        run: flutter config --enable-windows-desktop
+
+      - name: 拉取依赖
+        working-directory: simple_live_app
+        run: flutter pub get
+
+      - name: 构建 Windows Release
+        working-directory: simple_live_app
+        run: flutter build windows --release
+
+      - name: 校验产物
+        working-directory: simple_live_app/build/windows/x64/runner/Release
+        run: |
+          if (-not (Test-Path "simple_live_app.exe")) {
+            Write-Error "未生成 simple_live_app.exe"
+            exit 1
+          }
+          Get-ChildItem | Select-Object Name, Length
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimpleLive-windows-x64
+          path: simple_live_app/build/windows/x64/runner/Release/
+          if-no-files-found: error
+          retention-days: 30
