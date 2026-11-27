@@ -175,6 +175,8 @@ jobs:
   # 打包Windows
   build-windows:
     runs-on: windows-latest
+    env:
+      CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
     permissions:
       contents: write
     steps:
