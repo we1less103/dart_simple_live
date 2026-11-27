@@ -181,6 +181,7 @@ jobs:
       # 签出代码
       - uses: actions/checkout@v4
         with:
+          repository: xiaoyaocz/dart_simple_live
           ref: dev
       # 设置Flutter环境
       - name: Setup Flutter
